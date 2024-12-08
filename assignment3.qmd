@@ -1,0 +1,93 @@
+---
+title: "assignment3"
+author: "William O, Abraham A, Melissa PQ, Lace G"
+format: html
+---
+## Summary
+
+The director of AstraSync is currently negotiating a contract for its AI/ML services. Its client wants to implement their service across several locations, so the team has spent several weeks developing a strategy and timeline for the implementation. After reviewing the three alternatives for the contract, our team recommends Option C. 
+
+<br>
+
+## Analysis 
+
+There are three outcomes to this problem:  
+
+The client makes equal payments of $152,500 every month for 18 months 
+
+The client makes monthly payments of $800,000 every month plus a $800,000 bonus at the end of the month if successful 
+
+The client opens a request for a proposal where other companies compete for the project, where money bid is distributed back to the winning bidder at the end of each month plus a gain-share reward at the end of month 18 based on the following table: 
+
+
+
+```{mermaid}
+graph LR
+Start[ ] --> |AstraSync Offer: 40k per month|B(($626,902))
+Start[ ] --> |Client option A: 32k per month|D(($501,521.9))
+Start[ ] --> |Client option B: Monthly Pay and Bonus|C(($878,362.8))
+C(($878,362.8)) --> |Option 2: 0.7 $125k/Month + Bonus| E($483,204.45 ) -->|Expected Value| Q($506,713.29)
+C(($878,362.8)) --> |Option 2: 0.3 $125k/Month| F($23,508.84) -->|Expected Value| Q($506,713.29 )
+Start[ ] --> |Option C: $150k/Month| G[Won Bid .4]
+G[Won Bid .4] --> |Most Likely| H($5.6M) --> M(Simulation) -->|Expected Value| P($509,819.77)
+G[Won Bid .4] --> |Unlikely-Low| I($3.4M) --> M(Simulation) -->|Expected Value| P($509,819.77)
+G[Won Bid .4] --> |Unlikely-High| J($12.8M) --> M(Simulation) -->|Expected Value| P($509,819.77)
+Start[ ] --> |Lost Bid 0.6| O($0)
+
+```
+
+```{r, echo= FALSE, message = FALSE, warning = FALSE}
+rm(list=ls())
+library(extraDistr)
+library(ggplot2)
+#library(triangle)
+library(tidyverse)
+# Set up the simulation parameters # For reproducibility
+n_sims <- 10000  # Number of simulations - move up to 5 mili
+# set.seed(10)
+
+# Define the parameters of the triangular distribution
+
+# Mely pq 
+low_savings <- 3200000
+mode_savings <- 5600000
+high_savings <- 12800000
+
+
+# Simulate savings using the triangular distribution
+simulated_savings <- rtriang(n_sims, a = low_savings, b = high_savings, c = mode_savings)
+
+
+# Calculate the share of savings based on the table provided
+
+
+calculate_share2 <- function(savings) {
+  case_when(savings < 4000000 ~ 0,
+   savings >=4000000  & savings < 6000000 ~(savings - 4000000 ) * 0.2,
+  savings >= 6e6 & savings < 8e6 ~400000 + (savings - 6e6) * 0.4,
+TRUE ~ 1.2e6 + (savings - 8e6) * 0.6)
+  }
+
+
+#calculate_share2(10000000)
+#simulates_savings
+
+op4 <- sapply(simulated_savings,calculate_share2)
+
+
+#mean(op4)
+ 
+ 
+ 
+op4 <- as.data.frame(op4)
+ #good graph
+ ggplot(op4, aes(x = op4)) +
+   geom_histogram() +
+   scale_x_continuous(labels = scales::comma)+
+   geom_vline(aes(xintercept = mean(op4), color = "red"))
+
+
+```
+
+
+The `echo: false` option disables the printing of code (only output is displayed).
